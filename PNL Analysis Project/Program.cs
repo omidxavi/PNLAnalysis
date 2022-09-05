@@ -24,17 +24,19 @@ public class Program
             .Build();
 
         ConfigLogging(configuration);
+        Log.Information("Starting...");
         while (true)
         {
             if (IsInTime())
             {
-                Log.Information("Starting..."); 
+                Log.Information("Time to Project Works..."); 
                 var daily = new DailyBalanceManager();
                 daily.DailyBalanceMakerNobitex();
                 daily.DailyBalanceMakerJibimo();
                 daily.DailyBalanceMarketWalletDto();
                 daily.TotalRial();
                 daily.PnlCalculator();
+                Log.Information("Data Added to Database Successfully");
                 return Task.CompletedTask;
                 
             }
