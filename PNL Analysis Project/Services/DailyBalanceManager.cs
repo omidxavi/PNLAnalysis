@@ -1,4 +1,5 @@
 using Dapper;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -40,23 +41,24 @@ public class DailyBalanceManager
         db.SetToDatabase(dailyBalance);
     }
 
-    public List<NobitexToken> GetNobitexToken()
+    private string GetNobitexToken()
     {
-
-     string cs =
+        string cs =
         "host=37.152.186.76:5532;Username=postgres;Password=sp2Kfc7ucFBtTlb5es4K;Database=Crypto.General";
      using var con = new NpgsqlConnection(cs);
      con.Open();
      using var cmd = new NpgsqlCommand();
      cmd.Connection = con;
-     var result = con.QueryFirstOrDefault($"SELECT nobitex FROM account_auth_data where account_id=12");
-     var deserializer = JsonConvert.DeserializeObject<NobitexToken>(result);
-     return deserializer;
+     var result = con.Query<string>($"SELECT nobitex FROM account_auth_data where account_id=12").ToList();
+     var deserializer = JsonConvert.DeserializeObject<NobitexToken>(result[0]);
+     var token = deserializer.Token;
+     return token;
     }
 
 private decimal GetTotalRialBalanceNobitex()
 {
-    var result = new NobitexWebClient().GetWallet("57737808b1166e828b783262d9d6c626ba90d9a0");
+    var token = GetNobitexToken();
+    var result = new NobitexWebClient().GetWallet($"{token}");
     decimal total = 0;
     //decimal totalSell = 0;
     if (result != null)

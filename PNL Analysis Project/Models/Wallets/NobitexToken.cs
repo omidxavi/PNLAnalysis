@@ -13,3 +13,4 @@ public class NobitexToken
     [JsonProperty("username")]
     public string Username { get; set; }
 }
+

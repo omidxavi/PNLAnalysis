@@ -11,7 +11,7 @@ using Serilog;
 
 public class Program
 {
-    private const string configPath ="C:\\Users\\Omid\\RiderProjects\\PnlAnalysis Project\\Config.csv";
+    private const string configPath ="C:\\Users\\Omid\\RiderProjects\\PnlAnalysis\\Config.csv";
 
     public static Task Main(string[] args)
     {
@@ -24,10 +24,6 @@ public class Program
             .Build();
 
         ConfigLogging(configuration);
-        var test = new DailyBalanceManager().GetNobitexToken();
-        Console.WriteLine($"{test}");
-        Console.ReadKey();
-
         while (true)
         {
             if (IsInTime())
