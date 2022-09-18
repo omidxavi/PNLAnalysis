@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Globalization;
 using System.Threading.Channels;
 using Microsoft.Extensions.Configuration;
 using PNL_Analysis_Project;
@@ -11,10 +12,11 @@ using Serilog;
 
 public class Program
 {
-    private const string configPath ="C:\\Users\\Omid\\RiderProjects\\PnlAnalysis\\Config.csv";
+    private static string configPath =Path.Combine(Directory.GetCurrentDirectory(), "Config.csv");
 
-    public static Task Main(string[] args)
+     static void Main()
     {
+        AppDomain.CurrentDomain.UnhandledException += GlobalizationExceptionHandler;
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
@@ -37,14 +39,22 @@ public class Program
                 daily.TotalRial();
                 daily.PnlCalculator();
                 Log.Information("Data Added to Database Successfully");
-                return Task.CompletedTask;
-                
+                Log.Information($"Sleep for 1430 minute...");
+                Thread.Sleep(TimeSpan.FromMinutes(1430));
+                //return Task.CompletedTask;
+
             }
             else
             {
+                Log.Information("not in time...");
                 Thread.Sleep(TimeSpan.FromMinutes(1));
             }
         }
+    }
+
+    private static void GlobalizationExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+    {
+        Log.Information($"An Exception has raised {e.ExceptionObject.ToString()}");
     }
 
     public static bool IsInTime()
