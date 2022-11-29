@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.Net.Http;
 using PNL_Analysis_Project.DataLayer;
+using Serilog;
 
 namespace PNL_Analysis_Project;
 
@@ -14,28 +15,31 @@ public class NobitexAPIManager
 
     public List<Balances> GetAsset()
     {
-        var balances = new List<Balances>();
-        HttpClient = new HttpClient();
-       
-        using (var client=new HttpClient())
+        try
         {
-            client.DefaultRequestHeaders.Add("Api-Key",ApiKey);
-            client.DefaultRequestHeaders.Add("Account-UId",AccountUId);
-            var serializer = client.GetStringAsync(Url).Result;
-            var deserializer = JsonConvert.DeserializeObject<Root>(serializer);
-            for (int i = 0; i < deserializer.balances.Count; i++)
+            var balances = new List<Balances>();
+            HttpClient = new HttpClient();
+       
+            using (var client=new HttpClient())
             {
-                balances.Add(deserializer.balances[i]);
+                client.DefaultRequestHeaders.Add("Api-Key",ApiKey);
+                client.DefaultRequestHeaders.Add("Account-UId",AccountUId);
+                var serializer = client.GetStringAsync(Url).Result;
+                var deserializer = JsonConvert.DeserializeObject<Root>(serializer);
+                for (int i = 0; i < deserializer.balances.Count; i++)
+                {
+                    balances.Add(deserializer.balances[i]);
+                }
             }
+            return balances ;
 
-            foreach (var item in balances)
-            {
-                Console.WriteLine($"{item.asset} :  free={item.free} , locked={item.locked} , total = {item.total} ");
-            }
 
         }
-        return balances ;
-
+        catch (Exception e)
+        {
+            Log.Information(e.Message);
+            Thread.Sleep(1000);
+            return GetAsset();
+        }
     }
-    
 }

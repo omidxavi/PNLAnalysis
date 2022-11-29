@@ -29,8 +29,6 @@ public class DailyBalanceAddToDb
             var result = con.Query<DailyBalance>($"SELECT id,analysis_date,asset,amount,src FROM daily_balance")
                 .ToList();
             return result;
-        
-        
     }
 
     public List<DailyBalance> GetAllTotalsFromDatabase()
